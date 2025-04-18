@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Fake Profile Detector</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      text-align: center;
+      width: 300px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    a {
+      color: #007BFF;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- LOGIN -->
+  <div id="loginSection">
+    <h2>Login</h2>
+    <form id="loginForm">
+      <input type="email" id="loginEmail" placeholder="Email" required>
+      <input type="password" id="loginPassword" placeholder="Password" required>
+      <button type="submit">Login</button>
+    </form>
+    <p>Don't have an account? <a onclick="showSection('signup')">Sign up</a></p>
+  </div>
+
+  <!-- SIGNUP -->
+  <div id="signupSection" class="hidden">
+    <h2>Sign Up</h2>
+    <form id="signupForm">
+      <input type="text" id="signupName" placeholder="Full Name" required>
+      <input type="email" id="signupEmail" placeholder="Email" required>
+      <input type="password" id="signupPassword" placeholder="Password" required>
+      <button type="submit">Sign Up</button>
+    </form>
+    <p>Already have an account? <a onclick="showSection('login')">Login</a></p>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dashboardSection" class="hidden">
+    <h2>Dashboard</h2>
+    <p>Welcome to the AI Fake Profile Detection App!</p>
+    <button onclick="logout()">Logout</button>
+  </div>
+</div>
+
+<script>
+  const loginSection = document.getElementById('loginSection');
+  const signupSection = document.getElementById('signupSection');
+  const dashboardSection = document.getElementById('dashboardSection');
+
+  function showSection(section) {
+    loginSection.classList.add('hidden');
+    signupSection.classList.add('hidden');
+    dashboardSection.classList.add('hidden');
+
+    if (section === 'login') loginSection.classList.remove('hidden');
+    else if (section === 'signup') signupSection.classList.remove('hidden');
+    else if (section === 'dashboard') dashboardSection.classList.remove('hidden');
+  }
+
+  document.getElementById('loginForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    // Simulate login
+    alert('Login successful!');
+    showSection('dashboard');
+  });
+
+  document.getElementById('signupForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    // Simulate signup
+    alert('Signup successful!');
+    showSection('dashboard');
+  });
+
+  function logout() {
+    alert('Logged out!');
+    showSection('login');
+  }
+</script>
+
+</body>
+</html>
