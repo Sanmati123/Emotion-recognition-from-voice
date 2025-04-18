@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Voice Emotion Recognition</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(120deg, #0f2027, #203a43, #2c5364);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: #fff;
+      margin: 0;
+    }
+    .container {
+      backdrop-filter: blur(20px);
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 40px;
+      width: 500px;
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.1);
+      text-align: center;
+    }
+    h1 {
+      font-size: 28px;
+      margin-bottom: 30px;
+    }
+    input[type="file"] {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 12px;
+      width: 100%;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+    audio {
+      width: 100%;
+      margin: 15px 0;
+    }
+    button {
+      background: linear-gradient(90deg, #00c9ff, #92fe9d);
+      color: #000;
+      font-weight: bold;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 30px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: 0.3s ease;
+      box-shadow: 0 0 10px #00f2ff, 0 0 20px #00f2ff;
+    }
+    button:hover {
+      box-shadow: 0 0 20px #00f2ff, 0 0 40px #00f2ff;
+      transform: scale(1.05);
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+    canvas {
+      margin-top: 30px;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 20px;
+      border-radius: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎧 AI Voice Emotion Recognition</h1>
+
+    <input type="file" id="audioInput" accept="audio/*" />
+    <audio id="audioPlayer" controls></audio>
+
+    <button id="analyzeBtn">🔍 Analyze Emotion</button>
+
+    <div id="result"></div>
+    <canvas id="emotionChart"></canvas>
+  </div>
+
+  <script>
+    const audioInput = document.getElementById("audioInput");
+    const audioPlayer = document.getElementById("audioPlayer");
+    const analyzeBtn = document.getElementById("analyzeBtn");
+    const resultDiv = document.getElementById("result");
+    const chartCanvas = document.getElementById("emotionChart");
+    let chart = null;
+
+    audioInput.addEventListener("change", function () {
+      const file = this.files[0];
+      if (file) {
+        const url = URL.createObjectURL(file);
+        audioPlayer.src = url;
+      }
+    });
+
+    analyzeBtn.addEventListener("click", function () {
+      const file = audioInput.files[0];
+      if (!file) {
+        alert("Please upload an audio file first!");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("audio", file);
+
+      resultDiv.innerText = "🔄 Analyzing...";
+
+      fetch("http://localhost:5000/predict", {
+        method: "POST",
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        const emotion = data.emotion;
+        const confidences = data.confidences;
+
+        resultDiv.innerText = `🎯 Predicted Emotion: ${emotion}`;
+
+        if (chart) chart.destroy();
+        chart = new Chart(chartCanvas, {
+          type: "bar",
+          data: {
+            labels: Object.keys(confidences),
+            datasets: [{
+              label: "Confidence",
+              data: Object.values(confidences),
+              backgroundColor: [
+                "#00f2ff", "#ff4d4d", "#ffd633", "#33ff99", "#9d33ff"
+              ],
+              borderRadius: 8
+            }]
+          },
+          options: {
+            plugins: {
+              legend: {
+                display: false
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 1,
+                ticks: {
+                  color: "#fff"
+                }
+              },
+              x: {
+                ticks: {
+                  color: "#fff"
+                }
+              }
+            }
+          }
+        });
+      })
+      .catch(error => {
+        resultDiv.innerText = "⚠️ Error analyzing emotion.";
+        console.error("Error:", error);
+      });
+    });
+  </script>
+</body>
+</html>
